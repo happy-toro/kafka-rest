@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-rest
+  labels:
+    app: kafka-rest
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: kafka-rest
+  template:
+    metadata:
+      labels:
+        app: kafka-rest    
+    spec:
+      containers:
+        - name: kafka-rest  
+          image: sftan/kafka-rest
+          ports:
+          - containerPort: 8888
+          env:
+            - name: BOOTSTRAP_SERVERS
+              value: "kafka-0.hs-kafka.default.svc.cluster.local:9092,kafka-1.hs-kafka.default.svc.cluster.local:9092,kafka-2.hs-kafka.default.svc.cluster.local:9092"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-kafka-rest
+  labels:
+    app: kafka-rest
+spec:
+  selector:
+    app: kafka-rest
+  ports:
+  - port: 8888
+  type: ClusterIP  
+
